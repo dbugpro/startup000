@@ -1,6 +1,13 @@
 import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import Menu from './Menu';
+import Admin from './Admin';
+import Login from './Login';
+import UserManagement from './UserManagement';
+import Dashboard from './Dashboard';
+import Analytics from './Analytics';
+import Settings from './Settings';
+import Profile from './Profile';
 
 const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
   return (
@@ -24,12 +31,67 @@ const Home = ({ onNavigate }: { onNavigate: (page: string) => void }) => {
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  if (currentPage === 'menu') {
-    return <Menu onBack={() => setCurrentPage('home')} />;
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setCurrentPage('admin'); // Redirect to admin after login or back to menu? 'admin' seems appropriate
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentPage('menu');
+  };
+
+  const navigateTo = (page: string) => {
+    setCurrentPage(page);
+  };
+
+  const goBackToMenu = () => setCurrentPage('menu');
+
+  // Router Logic
+  switch (currentPage) {
+    case 'menu':
+      return (
+        <Menu 
+          onBack={() => setCurrentPage('home')} 
+          onNavigate={navigateTo}
+          isAuthenticated={isAuthenticated}
+          onLogout={handleLogout}
+        />
+      );
+    case 'admin':
+      return (
+        <Admin 
+          onBack={goBackToMenu} 
+          isAuthenticated={isAuthenticated} 
+          onLogin={handleLogin}
+        />
+      );
+    case 'login':
+      return (
+        <Login 
+          onLogin={() => {
+            setIsAuthenticated(true);
+            setCurrentPage('menu');
+          }} 
+          onBack={goBackToMenu} 
+        />
+      );
+    case 'users':
+      return isAuthenticated ? <UserManagement onBack={goBackToMenu} /> : <Login onLogin={() => {setIsAuthenticated(true); setCurrentPage('users')}} onBack={goBackToMenu} />;
+    case 'dashboard':
+      return isAuthenticated ? <Dashboard onBack={goBackToMenu} /> : <Login onLogin={() => {setIsAuthenticated(true); setCurrentPage('dashboard')}} onBack={goBackToMenu} />;
+    case 'analytics':
+      return isAuthenticated ? <Analytics onBack={goBackToMenu} /> : <Login onLogin={() => {setIsAuthenticated(true); setCurrentPage('analytics')}} onBack={goBackToMenu} />;
+    case 'settings':
+      return <Settings onBack={goBackToMenu} />;
+    case 'profile':
+      return isAuthenticated ? <Profile onBack={goBackToMenu} /> : <Login onLogin={() => {setIsAuthenticated(true); setCurrentPage('profile')}} onBack={goBackToMenu} />;
+    case 'home':
+    default:
+      return <Home onNavigate={navigateTo} />;
   }
-
-  return <Home onNavigate={setCurrentPage} />;
 };
 
 createRoot(document.getElementById('root')!).render(
