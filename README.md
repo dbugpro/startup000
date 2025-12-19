@@ -18,3 +18,11 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Vrx2XNFvtMvxcyQ1vtawOF
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+4. To open the app automatically in Chrome on Windows, run:
+   `npm run dev:chrome`
+
+Alternative (PowerShell):
+
+```powershell
+Start-Process chrome http://localhost:5173
+```
